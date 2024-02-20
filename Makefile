@@ -4,7 +4,7 @@ all:
 
 	@echo " * building ..."
 	
-	g++ main.cpp -c -o build/main.o
+	g++ src/main.cpp -c -o build/main.o
 	g++ -o main build/main.o $(LIBS)
 
 clean:
