@@ -12,5 +12,6 @@ Project under development
  - Create global GUI class
  - Create default configs for element objects
  - Rounded buttons
+ - Add a gitignore for build please
 
 
