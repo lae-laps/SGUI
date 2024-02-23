@@ -24,7 +24,21 @@
 class BoxContainerShape : public sf::Shape {
 public :
 
-    explicit BoxContainerShape(const sf::Vector2f boxSize, const unsigned int cornerRadius, const std::array<unsigned int, 4> cornerCut = {0, 0, 0, 0}, const unsigned int quarterCircleSections = 8) {
+    BoxContainerShape() = default;
+    //explicit BoxContainerShape();
+    
+    void set(const sf::Vector2f boxSize_, const unsigned int cornerRadius_, const std::array<unsigned int, 4> cornerCut_ = {0, 0, 0, 0}, const unsigned int quarterCircleSections_ = 8) {
+
+		boxSize = boxSize_;
+    	cornerRadius = cornerRadius_;
+    	cornerCut = cornerCut_;
+    	quarterCircleSections = quarterCircleSections_;
+
+    	updateShape();
+
+    }
+
+    void updateShape() {
 
 		if (cornerRadius == 0) {
 			int ignoreCornerCuts = 1;
@@ -81,10 +95,19 @@ public :
 			}
 		}
 
-
         update();				// update internal geometry of base class
     }
 
+    void setSize(const sf::Vector2f newSize) {
+		boxSize = newSize;
+		updateShape();
+    }
+
+    // bool -> return wether a position is inside the element
+    int isInsideElement(float x, float y) {
+		return getGlobalBounds().contains(sf::Vector2f(x, y));																		// most elegant way
+    }
+	
     // change this to size_t to prevent type errors
     virtual std::size_t getPointCount() const override {
     	return points.size();
@@ -97,6 +120,11 @@ public :
 private :
 	
 	std::vector<sf::Vector2f> points;
+
+	sf::Vector2f boxSize;
+	unsigned int cornerRadius;
+	unsigned int quarterCircleSections;
+	std::array<unsigned int, 4> cornerCut;
 	
 };
 

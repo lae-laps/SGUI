@@ -5,6 +5,8 @@
 #include <optional>
 #include <SFML/Graphics.hpp>
 
+#include "BoxContainerShape.hpp"
+
 /*	Since there are so many options neccesary for a completely-customizable button, we create a struct to mantain config
  *	This is also good, as a struct can be created, and many similar buttons can be created easilly
  *	TODO:
@@ -20,10 +22,16 @@ struct TextButtonProperties {
 	std::array<unsigned int, 4> fontSize;
 	sf::Font *font;
 
+	std::array<unsigned int, 4> cornerCuts;
+	unsigned int cornerRadius;
+
 	// remain in clicked state or return inmediatelly to normal state
 	// bool
 	int remainClickedLeft;
 	int remainClickedRight;
+
+	// bool -> change button size when text is changed
+	int resizeOnChangeText;
 
 	//std::array<std::string, 4> texts;
 	//std::array<std::unique_ptr<sf::Sprite>, 3> sprites;
@@ -45,26 +53,37 @@ public:
           font(properties.font),
           remainClickedLeft(properties.remainClickedLeft),
           remainClickedRight(properties.remainClickedRight),
+          cornerRadius(properties.cornerRadius),
+          cornerCuts(properties.cornerCuts),
+          resizeOnChangeText(properties.resizeOnChangeText),
           position(position),
           text(text),
           state(0)																	// Default to normal state
     {
-
-		// assign the dimensions parameter, or optionally if it doesnt exist, asign a default one
-		// conversion factor from font points to pixels is 0.75
-		dimensions = specifiedDimensions.value_or(sf::Vector2f(0.75f * fontSize[state] * text.size(), 50));
-
-		box = sf::RectangleShape(dimensions);	
-		box.setPosition(position);
-
-		shadow = sf::RectangleShape(dimensions);
-		shadow.setFillColor(sf::Color(20, 20, 20));										// TODO: fix this
+	
+		// CREATE LABEL
 
 		label = sf::Text();
-		label.setString(text);
+		//label.setString(text);
 		label.setPosition(position);
 		if (font)
 			label.setFont(*font);
+
+		setText(text);	
+
+		// CREATE BOXES
+    
+		// assign the dimensions parameter, or optionally if it doesnt exist, asign a default one
+		//dimensions = specifiedDimensions.value_or(sf::Vector2f(0.75f * fontSize[state] * text.size(), 50));
+		dimensions = calculateBoxBoundFromText();
+
+		box.set(dimensions, cornerRadius, cornerCuts);	
+		box.setPosition(position);
+
+		shadow.set(dimensions, cornerRadius, cornerCuts);
+		shadow.setFillColor(sf::Color(20, 20, 20));										// TODO: fix this
+
+		// SET STATE
 
 		setState(state);															// initialize button to state 0
 		lastState = state;															// set lastState to 0 for the specific case where button spawns with pointer inside it
@@ -87,15 +106,29 @@ public:
     	onStateChange(newState);
     }
 
+	sf::Vector2f calculateBoxBoundFromText() {
+		//sf::FloatRect textBounds = label.getLocalBounds();
+		sf::FloatRect textBounds = label.getGlobalBounds();
+			//TODO: add paddings
+		return sf::Vector2f(sf::Vector2f(textBounds.width, textBounds.height));
+	}
+
+    void setText(const std::string newText) {
+		label.setString(newText);
+		if (resizeOnChangeText) {
+			box.setSize(calculateBoxBoundFromText());
+		}
+    }
+
     // override this to define custom behaviour
     virtual void onStateChange(const int i) {
 		//std::cout << "new state: " << i << std::endl;
     }
 
 	// bool
-	int clickInsideElement(const float x, const float y) {
+	/*int clickInsideElement(const float x, const float y) {
 		return (x > position.x && x < position.x + dimensions.x && y > position.y && y < position.y + dimensions.y);
-	} 
+	} */
 
 	virtual void manageEvent(const sf::Event *event) {
 		switch (event->type) {
@@ -103,7 +136,7 @@ public:
 				// handle mouse click
 				switch (event->mouseButton.button) {
 					case sf::Mouse::Left:
-						if (clickInsideElement(event->mouseButton.x, event->mouseButton.y)) {
+						if (box.isInsideElement(event->mouseButton.x, event->mouseButton.y)) {
 							// clicked button -> set state to 2 (left click)
 							if (remainClickedLeft && (lastState == 2 || state == 2))
 								setState(0);
@@ -112,7 +145,7 @@ public:
 						}
 						break;
 					case sf::Mouse::Right:
-						if (clickInsideElement(event->mouseButton.x, event->mouseButton.y)) {
+						if (box.isInsideElement(event->mouseButton.x, event->mouseButton.y)) {
 							// clicked button -> set state to 3 (right click)
 							if (remainClickedRight && (lastState == 3 || state == 3)) 
 								setState(0);
@@ -125,7 +158,7 @@ public:
 				}
 				break;
 			case sf::Event::MouseMoved:
-				if (clickInsideElement(event->mouseMove.x, event->mouseMove.y)) {
+				if (box.isInsideElement(event->mouseMove.x, event->mouseMove.y)) {
 					// mouse inside button -> set state to 1 (highlighted)
 					// we have to remember previous state to return to it
 					if (state != 1) {
@@ -148,7 +181,8 @@ public:
 		if ((!remainClickedLeft && state == 2) || (!remainClickedRight && state == 3))
 			setState(0);
 
-		window.draw(shadow);
+		if (shadowThickness[state] != 0)
+			window.draw(shadow);
 		window.draw(box);
 		window.draw(label);
 	}
@@ -169,15 +203,22 @@ private:
 	int remainClickedLeft;
 	int remainClickedRight;
 
+	int resizeOnChangeText;
+
 	std::array<sf::Color, 4> innerColor;
 	std::array<sf::Color, 4> rimColor;
 	std::array<unsigned int, 4> rimThickness;
 	std::array<unsigned int, 4> shadowThickness;
+	std::array<unsigned int, 4> cornerCuts;
+	unsigned int cornerRadius;
 	std::array<unsigned int, 4> fontSize;
 	sf::Font *font;
 
-	sf::RectangleShape box;
-	sf::RectangleShape shadow;
+	//sf::RectangleShape box;
+	//sf::RectangleShape shadow;
+	BoxContainerShape box;
+	BoxContainerShape shadow;
+
 	sf::Text label;
 
 	sf::Vector2f position;
