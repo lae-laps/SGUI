@@ -1,16 +1,20 @@
-#include <cmath>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#include "button.hpp"
+#include "TextButton.hpp"
+#include "BoxContainerShape.hpp"
 
 #define WIDTH 1400
 #define HEIGHT 800
 
 int main() {
 
+	// set antialising
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+
     // create main window
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "GUI Test", sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "GUI Test", sf::Style::Default, settings);
 
 	// load fonts
 	
@@ -69,6 +73,12 @@ int main() {
 		sf::Vector2f(100, 500)
 		);
 
+
+	BoxContainerShape container(sf::Vector2f(300, 200), 0, {20, 0, 20, 0}, 5);
+	container.setPosition(sf::Vector2f(600, 500));
+	container.setFillColor(sf::Color(20, 255, 30));
+	container.setOutlineThickness(10);
+	container.setOutlineColor(sf::Color::Blue);
 
 
 	// predefine event
@@ -143,6 +153,8 @@ int main() {
 		button1.draw(window);
 		button2.draw(window);
 		button3.draw(window);
+
+		window.draw(container);
 
 		//window.draw(button.box);
 

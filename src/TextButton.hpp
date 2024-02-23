@@ -1,5 +1,5 @@
-#ifndef BUTTON_HPP
-#define BUTTON_HPP
+#ifndef TEXT_BUTTON_HPP
+#define TEXT_BUTTON_HPP
 
 #include <array>
 #include <optional>
