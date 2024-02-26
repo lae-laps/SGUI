@@ -6,6 +6,8 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+#include <iostream>
+
 // This class allows for dynamic, easy to use, rectangle-like shapes
 //
 // NOTES:
@@ -39,6 +41,9 @@ public :
     }
 
     void updateShape() {
+
+    	// clear point vector from beforehand if already set
+    	points.clear();
 
 		if (cornerRadius == 0) {
 			int ignoreCornerCuts = 1;
@@ -103,7 +108,7 @@ public :
 		updateShape();
     }
 
-    // bool -> return wether a position is inside the element
+    // return wether a position is inside the element
     int isInsideElement(float x, float y) {
 		return getGlobalBounds().contains(sf::Vector2f(x, y));																		// most elegant way
     }

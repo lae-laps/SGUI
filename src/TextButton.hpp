@@ -1,10 +1,12 @@
 #ifndef TEXT_BUTTON_HPP
 #define TEXT_BUTTON_HPP
 
+#include <SFML/Window/Event.hpp>
 #include <array>
 #include <optional>
 #include <SFML/Graphics.hpp>
 
+#include "UiElement.hpp"
 #include "BoxContainerShape.hpp"
 
 /*	Since there are so many options neccesary for a completely-customizable button, we create a struct to mantain config
@@ -26,12 +28,11 @@ struct TextButtonProperties {
 	unsigned int cornerRadius;
 
 	// remain in clicked state or return inmediatelly to normal state
-	// bool
-	int remainClickedLeft;
-	int remainClickedRight;
+	bool remainClickedLeft;
+	bool remainClickedRight;
 
-	// bool -> change button size when text is changed
-	int resizeOnChangeText;
+	// change button size when text is changed
+	bool resizeOnChangeText;
 
 	//std::array<std::string, 4> texts;
 	//std::array<std::unique_ptr<sf::Sprite>, 3> sprites;
@@ -40,7 +41,7 @@ struct TextButtonProperties {
 
 // specifiedDimensions is not needed, if it is set as NULL, the constructor will decide the adecuate dimensions
 
-class TextButton {
+class TextButton : public UiElement {
 public:
 
     // constructor
@@ -82,6 +83,11 @@ public:
 
 		shadow.set(dimensions, cornerRadius, cornerCuts);
 		shadow.setFillColor(sf::Color(20, 20, 20));										// TODO: fix this
+
+		// SET MISC
+
+		lastLeftClickWasInside = false;
+		lastRightClickWasInside = false;
 
 		// SET STATE
 
@@ -137,26 +143,51 @@ public:
 				switch (event->mouseButton.button) {
 					case sf::Mouse::Left:
 						if (box.isInsideElement(event->mouseButton.x, event->mouseButton.y)) {
+
+							lastLeftClickWasInside = true;
+
 							// clicked button -> set state to 2 (left click)
-							if (remainClickedLeft && (lastState == 2 || state == 2))
+							//if (remainClickedLeft && (lastState == 2 || state == 2))
+							if (state == 2 || lastState == 2)
 								setState(0);
-							else
+							else 
 								setState(2);
+						} else {
+							lastLeftClickWasInside = false;
 						}
 						break;
 					case sf::Mouse::Right:
 						if (box.isInsideElement(event->mouseButton.x, event->mouseButton.y)) {
+
+							lastRightClickWasInside = true;
+
 							// clicked button -> set state to 3 (right click)
-							if (remainClickedRight && (lastState == 3 || state == 3)) 
+							//if (remainClickedRight && (lastState == 3 || state == 3)) 
+							if (state == 3 || lastState == 3)
 								setState(0);
 							else
 								setState(3);
+						} else {
+							lastRightClickWasInside = false;
 						}
 						break;
 					default:
 						break;
 				}
 				break;
+			case sf::Event::MouseButtonReleased:
+				switch (event->mouseButton.button) {
+					case sf::Mouse::Left:	
+						if (lastLeftClickWasInside && !remainClickedLeft)
+							setState(0);
+						break;
+					case sf::Mouse::Right:
+						if (lastRightClickWasInside && !remainClickedRight)
+							setState(0);
+						break;
+					default:
+						break;
+				}
 			case sf::Event::MouseMoved:
 				if (box.isInsideElement(event->mouseMove.x, event->mouseMove.y)) {
 					// mouse inside button -> set state to 1 (highlighted)
@@ -175,11 +206,11 @@ public:
 		}
 	}
 	
-	void draw(sf::RenderWindow &window) {
+	virtual void draw(sf::RenderWindow &window) {
 
 		// clean non-persistent states
-		if ((!remainClickedLeft && state == 2) || (!remainClickedRight && state == 3))
-			setState(0);
+		//if ((!remainClickedLeft && state == 2) || (!remainClickedRight && state == 3))
+		//	setState(0);
 
 		if (shadowThickness[state] != 0)
 			window.draw(shadow);
@@ -200,10 +231,10 @@ private:
 
 	std::string text;
 
-	int remainClickedLeft;
-	int remainClickedRight;
+	bool remainClickedLeft;
+	bool remainClickedRight;
 
-	int resizeOnChangeText;
+	bool resizeOnChangeText;
 
 	std::array<sf::Color, 4> innerColor;
 	std::array<sf::Color, 4> rimColor;
@@ -224,6 +255,8 @@ private:
 	sf::Vector2f position;
 	sf::Vector2f dimensions;
 
+	bool lastLeftClickWasInside;
+	bool lastRightClickWasInside;
 
 };
 

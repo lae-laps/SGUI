@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "Slider.hpp"
 #include "TextButton.hpp"
 
 #define WIDTH 1400
@@ -67,7 +68,7 @@ int main() {
 			.fontSize = {20, 20, 20, 20},			// Change the font size as needed
 			.font = &defaultFont,
 			.remainClickedLeft = 1,
-			.remainClickedRight = 0
+			.remainClickedRight = 1
 
 		},
 		sf::Vector2f(100, 500)
@@ -106,6 +107,64 @@ int main() {
 		sf::Vector2f(25, 25)
 		);
 
+	TextButton button6("Test Button", 
+		TextButtonProperties {
+			.innerColor = {sf::Color::Blue, sf::Color::Blue, sf::Color::Red, sf::Color::Green},
+			.rimColor = {sf::Color::Black, sf::Color::Black, sf::Color::Black, sf::Color::Black},
+			.rimThickness = {0, 0, 0, 0},
+			.shadowThickness = {0, 0, 0, 0},
+			.fontSize = {20, 20, 20, 20},			// Change the font size as needed
+			.font = &defaultFont,
+			.remainClickedLeft = 0,
+			.remainClickedRight = 0
+
+		},
+		sf::Vector2f(400, 500)
+		);
+
+	Slider slider1(
+		SliderProperties {
+			.min = 10.0,
+			.max = 40.0,
+			.initialValue = 20.0,
+			.showSelector = true,
+			.baseDimensions = sf::Vector2f(200, 5),
+			.selectorDimensions = sf::Vector2f(10, 10),
+
+			.baseRimThickness = {0, 0, 0, 0, 0, 0},
+			.selectorRimThickness = {2, 2, 2, 2, 2, 2},
+			.baseFillColorLeft = {sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0)},
+			.baseFillColorRight = {sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150)},
+			.selectorFillColor = {sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100)},
+			.selectorRimColor = {sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0)},
+
+			.baseCornerRadius = 5,
+			.selectorCornerRadius = 10,
+		}, 
+		sf::Vector2f(600, 600)
+		);
+
+	Slider slider2(
+		SliderProperties {
+			.min = 20.0,
+			.max = 40.0,
+			.initialValue = 30.0,
+			.showSelector = true,
+			.baseDimensions = sf::Vector2f(300, 10),
+			.selectorDimensions = sf::Vector2f(5, 10),
+			.baseRimThickness = {2, 2, 2, 2, 2, 2},
+			.selectorRimThickness = {2, 2, 2, 2, 2, 2},
+			.baseFillColorLeft = {sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0)},
+			.baseFillColorRight = {sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150), sf::Color(150, 150, 150)},
+			.selectorFillColor = {sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100), sf::Color(100, 100, 100)},
+			.selectorRimColor = {sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0), sf::Color(255, 128, 0)},
+			.baseCornerRadius = 5,
+			.selectorCornerRadius = 0,
+		}, 
+		sf::Vector2f(600, 700)
+		);
+
+
 	// predefine event
 	sf::Event event;
 
@@ -122,6 +181,10 @@ int main() {
             button3.manageEvent(&event);
             button4.manageEvent(&event);
             button5.manageEvent(&event);
+            button6.manageEvent(&event);
+
+			slider1.manageEvent(&event);
+			slider2.manageEvent(&event);
             
 			switch (event.type) {
 				case sf::Event::KeyPressed:				// key (pressed)
@@ -182,6 +245,10 @@ int main() {
 		button3.draw(window);
 		button4.draw(window);
 		button5.draw(window);
+		button6.draw(window);
+
+		slider1.draw(window);
+		slider2.draw(window);
 
 		//window.draw(button.box);
 
