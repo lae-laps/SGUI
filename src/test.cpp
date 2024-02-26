@@ -2,10 +2,11 @@
 #include <SFML/Graphics.hpp>
 
 #include "Slider.hpp"
+#include "TextInput.hpp"
 #include "TextButton.hpp"
 
-#define WIDTH 1400
-#define HEIGHT 800
+#define WIDTH 1600
+#define HEIGHT 1000
 
 int main() {
 
@@ -164,6 +165,46 @@ int main() {
 		sf::Vector2f(600, 700)
 		);
 
+	TextInput input1(
+		TextInputProperties {
+			.defaultText = "default",
+			.cursorWidth = 2,
+			.cornerRadius = 5,
+			.dimensions = sf::Vector2f(200, 25),
+			.rimThickness = {2, 2, 2, 2},
+			.cursorColor = sf::Color(0, 0, 0),
+			.fillColor = {sf::Color(100, 100, 200), sf::Color(150, 150, 250), sf::Color(150, 150, 250), sf::Color(150, 150, 250)},
+			.rimColor = {sf::Color(50, 50, 50), sf::Color(50, 50, 50), sf::Color(250, 150, 150), sf::Color(150, 150, 150)},
+			.textColor = {sf::Color(50, 50, 50), sf::Color(0, 0, 0), sf::Color(0, 0, 0), sf::Color(150, 150, 150)},
+			.fontSize = 16,
+			.font = &defaultFont,
+			.allowEmptyInput = false,
+			.maxInputSize = 19
+
+		},
+		sf::Vector2f(1000, 400)
+		);
+
+
+	TextInput input2(
+		TextInputProperties {
+			.defaultText = "input 2",
+			.cursorWidth = 2,
+			.cornerRadius = 5,
+			.dimensions = sf::Vector2f(400, 25),
+			.rimThickness = {2, 2, 2, 2},
+			.cursorColor = sf::Color(0, 0, 0),
+			.fillColor = {sf::Color(200, 100, 100), sf::Color(100, 200, 100), sf::Color(100, 100, 200), sf::Color(100, 200, 200)},
+			.rimColor = {sf::Color(50, 50, 50), sf::Color(50, 50, 50), sf::Color(50, 50, 50), sf::Color(50, 50, 50)},
+			.textColor = {sf::Color(100, 100, 100), sf::Color(0, 0, 0), sf::Color(0, 0, 0), sf::Color(150, 150, 150)},
+			.fontSize = 16,
+			.font = &defaultFont,
+			.allowEmptyInput = true,
+			.maxInputSize = 0
+
+		},
+		sf::Vector2f(1000, 600)
+		);
 
 	// predefine event
 	sf::Event event;
@@ -185,13 +226,16 @@ int main() {
 
 			slider1.manageEvent(&event);
 			slider2.manageEvent(&event);
+
+			input1.manageEvent(&event);
+			input2.manageEvent(&event);
             
 			switch (event.type) {
 				case sf::Event::KeyPressed:				// key (pressed)
 					// handle keypress
 					switch (event.key.code) {
 						case sf::Keyboard::Escape:		// close on Esc
-							window.close();
+							//window.close();
 							break;
 						case sf::Keyboard::Key::W:
 							//y -= delta;
@@ -249,6 +293,9 @@ int main() {
 
 		slider1.draw(window);
 		slider2.draw(window);
+
+		input1.draw(window);
+		input2.draw(window);
 
 		//window.draw(button.box);
 
